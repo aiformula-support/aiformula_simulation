@@ -1,7 +1,6 @@
 import os.path as osp
-from typing import Tuple
 
-from launch import LaunchDescription, LaunchContext
+from launch import LaunchDescription
 from launch.actions import (
     DeclareLaunchArgument, IncludeLaunchDescription, ExecuteProcess, OpaqueFunction
 )
@@ -9,19 +8,22 @@ from launch.substitutions import LaunchConfiguration
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from ament_index_python.packages import get_package_share_directory
 
+from sample_vehicle.vehicle_util import convert_xacro_to_urdf
 from sample_simulator.convert_urdf_to_sdf import convert_urdf_to_sdf
 import shutil
 
 def get_gz_model(context):
     vehicle_name = LaunchConfiguration("vehicle_name").perform(context)
+    xacro_path = osp.join(get_package_share_directory("sample_vehicle"), "xacro", vehicle_name + ".xacro")
     urdf_path = osp.join(get_package_share_directory("sample_vehicle"), "xacro", vehicle_name + ".urdf")
     sdf_path = osp.join(get_package_share_directory("sample_simulator"), "models", "ai_mobility_1", "model.sdf")
+    convert_xacro_to_urdf(xacro_path, urdf_path)
     convert_urdf_to_sdf(urdf_path, sdf_path)
 
-    reference_path = osp.join(get_package_share_directory("sample_vehicle"),"xacro","meshes")
-    create_path = osp.join(get_package_share_directory("sample_simulator"),"models", "ai_mobility_1", "meshes")
-    if not osp.exists(create_path):
-        shutil.copytree(reference_path, create_path)
+    source_mesh_path = osp.join(get_package_share_directory("sample_vehicle"),"xacro","meshes")
+    target_mesh_path = osp.join(get_package_share_directory("sample_simulator"),"models", "ai_mobility_1", "meshes")
+    if not osp.exists(target_mesh_path):
+        shutil.copytree(source_mesh_path, target_mesh_path)
 
     else:
         print("exist meshes file")
@@ -66,9 +68,6 @@ def generate_launch_description():
         }.items(),
     )
 
-    # ExecuteProcess(
-    # cmd=["export", "GAZEBO_MODEL_PATH=$(ros2 pkg prefix vehicle)/share/vehicle/xacro"],
-    # shell=True),
     gzserver = IncludeLaunchDescription(   
         PythonLaunchDescriptionSource(
             osp.join(get_package_share_directory("gazebo_ros"),
