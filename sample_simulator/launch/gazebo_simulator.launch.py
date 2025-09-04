@@ -30,7 +30,6 @@ def get_gz_model(context):
 
 
 def generate_launch_description():
-    VEHICLE_NAME = "ai_mobility_1"
     launch_args = (
         DeclareLaunchArgument(
             "world_name",
@@ -63,7 +62,7 @@ def generate_launch_description():
                      "launch/vehicle_tf_broadcaster.launch.py"),
         ),
         launch_arguments={
-            "vehicle_name": VEHICLE_NAME,
+            "vehicle_name": LaunchConfiguration("vehicle_name"),
             "use_sim_time": LaunchConfiguration("use_sim_time"),
         }.items(),
     )
