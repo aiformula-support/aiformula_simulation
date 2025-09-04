@@ -1,0 +1,84 @@
+<?xml version="1.0" ?>
+<sdf version="1.5">
+  <model name="ai_mobility_with_drive">  
+    <include>
+      <uri>model://ai_mobility_1</uri>
+      <name>ai_mobility</name>
+
+
+      <plugin name="turtlebot3_diff_drive" filename="libgazebo_ros_diff_drive.so">
+        <update_rate>30</update_rate>
+        <!-- wheels -->
+        <left_joint>wheel_left_joint</left_joint>
+        <right_joint>wheel_right_joint</right_joint>
+
+        <!-- kinematics -->
+        <wheel_separation>0.60</wheel_separation>
+        <wheel_diameter>0.30</wheel_diameter>
+
+        <!-- limits -->
+        <max_wheel_torque>50</max_wheel_torque>
+        <max_wheel_acceleration>1.0</max_wheel_acceleration>
+
+        <command_topic>cmd_vel</command_topic>
+
+        <!-- output -->
+        <publish_odom>true</publish_odom>
+        <publish_odom_tf>true</publish_odom_tf>
+        <publish_wheel_tf>false</publish_wheel_tf>
+
+        <odometry_topic>odom</odometry_topic>
+        <odometry_frame>odom</odometry_frame>
+        <robot_base_frame>base_footprint</robot_base_frame>
+      </plugin>
+
+      <plugin name="turtlebot3_joint_state" filename="libgazebo_ros_joint_state_publisher.so">
+        <ros>
+          <!-- <namespace>/tsimulator/models/ai_mobility/model.sdf simulator/models/ai_mobility/model.configb3</namespace> -->
+        </ros>
+        <update_rate>30</update_rate>
+        <joint_name>wheel_left_joint</joint_name>
+        <joint_name>wheel_right_joint</joint_name>
+      </plugin>
+    </include>
+
+   <!-- ADD CAMERA -->
+    <joint name="camera_rgb_joint" type="fixed">
+      <parent>ai_mobility::base_footprint</parent>
+      <child>camera_rgb_frame</child>
+      <pose>0.055 0 0.525 0 -0 0</pose>
+      <axis>
+        <xyz>0 0 1</xyz>
+      </axis>
+    </joint>
+
+    <link name="camera_rgb_frame">
+      <pose>0.055 0 0.525 0 -0 0</pose>
+      <sensor name="camera" type="camera">
+        <always_on>true</always_on>
+        <visualize>true</visualize>
+        <update_rate>30</update_rate>
+        <camera name="intel_realsense_r200">
+          <horizontal_fov>1.02974</horizontal_fov>
+          <image>
+            <width>1920</width>
+            <height>1080</height>
+            <format>R8G8B8</format>
+          </image>
+          <clip>
+            <near>0.01</near>
+            <far>300</far>
+          </clip>
+          <noise>
+            <type>gaussian</type>
+            <mean>0.0</mean>
+            <stddev>0.007</stddev>
+          </noise>
+        </camera>
+          <plugin name="camera_driver" filename="libgazebo_ros_camera.so">
+          </plugin>
+      </sensor>
+    </link> 
+
+  </model>
+</sdf>
