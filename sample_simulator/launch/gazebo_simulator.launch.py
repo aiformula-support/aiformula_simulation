@@ -15,7 +15,7 @@ import shutil
 def get_gz_model(context):
     vehicle_name = LaunchConfiguration("vehicle_name").perform(context)
     xacro_path = osp.join(get_package_share_directory("sample_vehicle"), "xacro", vehicle_name + ".xacro")
-    urdf_path = osp.join(get_package_share_directory("sample_vehicle"), "xacro", vehicle_name + ".urdf")
+    urdf_path = osp.join(get_package_share_directory("sample_simulator"), "models", "ai_mobility_1", vehicle_name + ".urdf")
     sdf_path = osp.join(get_package_share_directory("sample_simulator"), "models", "ai_mobility_1", "model.sdf")
     convert_xacro_to_urdf(xacro_path, urdf_path)
     convert_urdf_to_sdf(urdf_path, sdf_path)
